@@ -19,15 +19,13 @@ struct Solucion {
 // comentario sobre el coste, O(f(N)), donde N es ...
 Solucion resolver(vector<int> const & oro, vector<int> const & tiempos, Matriz<Solucion> & M, int tiempo, int tipos) {
 	//Problema resuelto
-	cout << "Resolviendo " << tipos << " " << tiempo << endl;
 	if(M[tipos][tiempo].oro != -1 && M[tipos][tiempo].cofres != -1){
 		return M[tipos][tiempo];
 	}
 	//No es posible recoger ese cofre
 	if(3*tiempos[tipos-1] > tiempo){
-		cout << "Copio del de arriba en " << tipos << " " << tiempo << endl;
 		Solucion aux = resolver(oro,tiempos,M,tiempo,tipos-1);
-		if(aux.oro != 0 && aux.cofres != 0){M[tipos][tiempo] = aux;}
+		M[tipos][tiempo] = aux;
 	}
 	//Se resuelven los dos subproblemas, y se elige la mejor de las dos soluciones
 	else{
@@ -35,9 +33,8 @@ Solucion resolver(vector<int> const & oro, vector<int> const & tiempos, Matriz<S
 		tomar.oro += oro[tipos-1];
 		tomar.cofres += 1;
 		Solucion no_tomar = resolver(oro,tiempos,M,tiempo,tipos-1);
-		cout << "Comparo " << tomar.oro << "," << tomar.cofres << " con " << no_tomar.oro << "," << no_tomar.cofres << endl;
 		M[tipos][tiempo] = (tomar.oro > no_tomar.oro)? tomar : no_tomar;
-		cout << "Me quedo con " << M[tipos][tiempo].oro << "," << M[tipos][tiempo].cofres << endl;
+
 	}
 	//Se devuelve el resultado de la solucion de este problema
 	return M[tipos][tiempo];
@@ -112,12 +109,7 @@ bool resuelveCaso() {
    // La funcion recursiva devuelve el oro total que se recoge y el numero de cofres que se recogen
    // La funcion me dice, para los tipos del 0 al i de cofres, y quedandome un tiempo T, el numero de cofres y el oro total que consigo recoger
    Solucion sol = resolver(oro, c_tiempo, M, tiempo, n_cofres);
-   for(int i = 0; i < n_cofres+1 ; i++){
-	   for(int j = 0; j < tiempo+1 ; j++){
-		   cout << "(" << M[i][j].oro << "," << M[i][j].cofres << ")";
-	   }
-	   cout << endl;
-   }
+
    // escribir sol
    cout << sol.oro << endl;
    cout << sol.cofres << endl;
@@ -126,16 +118,19 @@ bool resuelveCaso() {
    int i = n_cofres;
    int j = tiempo;
    while( i > 0 && j > 0){
+
 	   // Si la solucion del subproblema no es no coger el cofre
-	   if(M[i][j].oro != M[i-1][j].oro && M[i][j].cofres != M[i-1][j].cofres){
+	   if(M[i][j].oro != M[i-1][j].oro ){
 		   // La solucion es coger el cofre, asi que lo marco
 		   marcado[i-1] = true;
 		   // Gasto el tiempo
 		   j -= 3*c_tiempo[i-1];
 	   }
+
 	   // En cualquier caso, se pasa al siguiente cofre
 	   i--;
    }
+
    for(unsigned int i = 0; i < marcado.size(); i ++){
 	   if(marcado[i]){
 		   cout << c_tiempo[i] << " " << oro[i] << endl;
