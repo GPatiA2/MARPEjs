@@ -23,11 +23,18 @@ EntInf resolver(Matriz<EntInf> & M, string const & palabra, int i, int j) {
 			return M[i][j];
 		}
 		else if(i == j){
-			M[i][j] = 1;
+			M[i][j] = 0;
 			return M[i][j];
 		}
 		else if(palabra[i] == palabra[j]){
-			M[i][j] = resolver(M,palabra, i+1, j-1);
+			// Me faltaba este caso. Para aapaapaa no funcionaba porque llegaba a las dos aes centrales
+			//    , cruzaban la i y la j, e iba directo a +Inf
+			if(i+1 == j){
+				M[i][j] = 0;
+			}
+			else{
+				M[i][j] = resolver(M,palabra, i+1, j-1);
+			}
 			return M[i][j];
 		}
 		else{
